@@ -9,7 +9,7 @@
     "moduleResolution": "node16",
 
     /* Project structure */
-    "rootDir": "src",
+    "rootDir": ".",
     "outDir": "dist",
 
     /* Type safety */
@@ -20,6 +20,8 @@
     /* Interop & correctness */
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
 
     /* Build output */
     "sourceMap": true,
@@ -30,5 +32,5 @@
     /* Environment types */
     "types": ["node"]
   },
-  "include": ["src"]
+  "include": ["src", "drizzle.config.ts"]
 }
