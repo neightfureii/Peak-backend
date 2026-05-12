@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import sportsRouter from "./routes/sports.ts";
+import studentsRouter from "./routes/students.ts";
 
 const app = express();
 const PORT = 8000;
@@ -17,6 +18,7 @@ app.use(cors({
 app.use(express.json());
 
 app.use('/api/sports', sportsRouter);
+app.use('/api/students', studentsRouter);
 
 // Root GET route
 app.get("/", (req, res) => {

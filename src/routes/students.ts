@@ -1,14 +1,14 @@
 import { and, desc, eq, getTableColumns, ilike, or, sql } from 'drizzle-orm';
 import express from 'express';
-import { sports, sports_categories } from '../db/schema/app.ts';
+import { students, users } from '../db/schema/app.ts';
 import { db } from '../db/index.ts';
 
 const router = express.Router();
 
-// Get all sports with filtering, search and pagination
+// Get all students with filtering, search and pagination
 router.get('/', async (req, res) => {
     try {
-        const { search, sports_category, page = 1, limit = 10 } = req.query;
+        const { search, page = 1, limit = 10 } = req.query;
 
         const currentPage = Math.max(1, parseInt(String(page), 10) || 1);
         const limitPerPage = Math.min(Math.max(1, parseInt(String(limit), 10) || 10), 100); // Max limit of 100 records per page
@@ -20,15 +20,8 @@ router.get('/', async (req, res) => {
         if (search) {
             filterConditions.push(
                 or(
-                    ilike(sports.name, `%${search}%`),
-                    ilike(sports.code, `%${search}%`),
+                    ilike(users.name, `%${search}%`),
                 )
-            )
-        }
-
-        if (sports_category) {
-            filterConditions.push(
-                ilike(sports_categories.name, `%${sports_category}%`)
             )
         }
 
@@ -36,26 +29,26 @@ router.get('/', async (req, res) => {
 
         const countResult = await db
             .select({ count: sql<number>`count(*)` })
-            .from(sports)
-            .leftJoin(sports_categories, eq(sports.categoryId, sports_categories.id))
+            .from(students)
+            .leftJoin(users, eq(students.userId, users.id))
             .where(whereClause);
 
         const totalCount = countResult[0]?.count ?? 0;
 
-        const sportsList = await db
+        const studentsList = await db
             .select({
-                ...getTableColumns(sports),
-                sports_category: { ...getTableColumns(sports_categories) },
+                ...getTableColumns(students),
+                users: { ...getTableColumns(users) },
             })
-            .from(sports)
-            .leftJoin(sports_categories, eq(sports.categoryId, sports_categories.id))
+            .from(students)
+            .leftJoin(users, eq(students.userId, users.id))
             .where(whereClause)
-            .orderBy(desc(sports.createdAt))
+            .orderBy(desc(students.createdAt))
             .limit(limitPerPage)
             .offset(offset);
 
         res.status(200).json({
-            data: sportsList,
+            data: studentsList,
             pagination: {
                 page: currentPage,
                 limit: limitPerPage,
@@ -65,8 +58,8 @@ router.get('/', async (req, res) => {
         });
 
     } catch (error) {
-        console.error(`GET /sports error: ${error}`);
-        res.status(500).json({ error: 'Failed to get sports' });
+        console.error(`GET /students error: ${error}`);
+        res.status(500).json({ error: 'Failed to get students' });
     }
 });
 
