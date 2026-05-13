@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import sportsRouter from "./routes/sports.ts";
 import studentsRouter from "./routes/students.ts";
+import securityMiddleware from "./middleware/security.ts";
 
 const app = express();
 const PORT = 8000;
@@ -16,6 +17,8 @@ app.use(cors({
 
 // Middleware
 app.use(express.json());
+
+app.use(securityMiddleware);
 
 app.use('/api/sports', sportsRouter);
 app.use('/api/students', studentsRouter);
