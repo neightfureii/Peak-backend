@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
-import { integer, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
+import { user } from "./auth.ts";
 
 // Timestamps
 const timestamps = {
@@ -7,18 +8,9 @@ const timestamps = {
     updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()).notNull(),
 }
 
-// Users
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  name: varchar("name", { length: 100 }).notNull(),
-  email: varchar("email", { length: 100 }).notNull().unique(),
-  image: varchar("image", { length: 255 }),
-  ...timestamps,
-});
-
 // Students
 export const students = pgTable("students", {
-  userId: integer("user_id").primaryKey().references(() => users.id, { onDelete: 'cascade' }),
+  userId: text("user_id").primaryKey().references(() => user.id, { onDelete: 'cascade' }),
   registrationNumber: varchar("registration_number", { length: 15 }).unique().notNull(),
   faculty: varchar("faculty", { length: 50 }).notNull(),
   degree: varchar("degree", { length: 100 }),
@@ -28,17 +20,17 @@ export const students = pgTable("students", {
 
 // Sports
 export const sports_categories = pgTable("sports_categories", {
-    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    id: text("id").primaryKey(),
     name: varchar("name", { length: 255 }).notNull(),
     description: varchar("description", { length: 255 }),
     ...timestamps
 });
 
 export const sports = pgTable("sports", {
-    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    id: text("id").primaryKey(),
     name: varchar("name", { length: 255 }).notNull(),
     code: varchar("code", { length: 50 }).notNull().unique(),
-    categoryId: integer("sports_category_id").references(() => sports_categories.id).notNull(),
+    categoryId: text("sports_category_id").references(() => sports_categories.id).notNull(),
     description: varchar("description", { length: 255 }),
     ...timestamps
 });
@@ -46,19 +38,15 @@ export const sports = pgTable("sports", {
 // Players
 export const players = pgTable("players", {
   id: serial("id").primaryKey(),
-  studentId: integer("student_id").references(() => students.userId, { onDelete: 'cascade' }).notNull(),
-  sportId: integer("sport_id").references(() => sports.id, { onDelete: 'cascade' }).notNull(),
+  studentId: text("student_id").references(() => students.userId, { onDelete: 'cascade' }).notNull(),
+  sportId: text("sport_id").references(() => sports.id, { onDelete: 'cascade' }).notNull(),
   position: varchar("position", { length: 100 }), // e.g., "Goalkeeper"
   ...timestamps,
 });
 
 // Relations
-export const usersRelations = relations(users, ({ one }) => ({
-  student: one(students, { fields: [users.id], references: [students.userId] }),
-}));
-
 export const studentsRelations = relations(students, ({ one, many }) => ({
-  user: one(users, { fields: [students.userId], references: [users.id] }),
+  user: one(user, { fields: [students.userId], references: [user.id] }),
   playerEntries: many(players),
 }));
 

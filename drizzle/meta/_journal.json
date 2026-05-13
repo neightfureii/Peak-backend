@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1777989887415,
-      "tag": "0000_magenta_warlock",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1777991571548,
-      "tag": "0001_wonderful_madripoor",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1778302030104,
-      "tag": "0002_elite_prowler",
+      "when": 1778646094959,
+      "tag": "0000_bumpy_clea",
       "breakpoints": true
     }
   ]
