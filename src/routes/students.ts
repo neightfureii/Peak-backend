@@ -1,7 +1,8 @@
 import { and, desc, eq, getTableColumns, ilike, or, sql } from 'drizzle-orm';
 import express from 'express';
-import { students, users } from '../db/schema/app.ts';
+import { students } from '../db/schema/app.ts';
 import { db } from '../db/index.ts';
+import { user } from '../db/schema/auth.ts';
 
 const router = express.Router();
 
@@ -20,7 +21,7 @@ router.get('/', async (req, res) => {
         if (search) {
             filterConditions.push(
                 or(
-                    ilike(users.name, `%${search}%`),
+                    ilike(user.name, `%${search}%`),
                 )
             )
         }
@@ -30,7 +31,7 @@ router.get('/', async (req, res) => {
         const countResult = await db
             .select({ count: sql<number>`count(*)` })
             .from(students)
-            .leftJoin(users, eq(students.userId, users.id))
+            .leftJoin(user, eq(students.userId, user.id))
             .where(whereClause);
 
         const totalCount = countResult[0]?.count ?? 0;
@@ -38,10 +39,10 @@ router.get('/', async (req, res) => {
         const studentsList = await db
             .select({
                 ...getTableColumns(students),
-                users: { ...getTableColumns(users) },
+                user: { ...getTableColumns(user) },
             })
             .from(students)
-            .leftJoin(users, eq(students.userId, users.id))
+            .leftJoin(user, eq(students.userId, user.id))
             .where(whereClause)
             .orderBy(desc(students.createdAt))
             .limit(limitPerPage)
