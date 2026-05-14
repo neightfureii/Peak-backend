@@ -1,8 +1,13 @@
+import AgentAPI from "apminsight";
+AgentAPI.config();
+
 import express from "express";
 import cors from "cors";
 import sportsRouter from "./routes/sports.ts";
 import studentsRouter from "./routes/students.ts";
 import securityMiddleware from "./middleware/security.ts";
+import { toNodeHandler } from "better-auth/node";
+import { auth } from "./lib/auth.ts";
 
 const app = express();
 const PORT = 8000;
@@ -14,6 +19,9 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }))
+
+// Better Auth
+app.all('/api/auth/*splat', toNodeHandler(auth));
 
 // Middleware
 app.use(express.json());
