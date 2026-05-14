@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { pgTable, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
 import { user } from "./auth.ts";
 
@@ -20,24 +20,26 @@ export const students = pgTable("students", {
 
 // Sports
 export const sports_categories = pgTable("sports_categories", {
-    id: text("id").primaryKey(),
+    id: text("id").primaryKey().default(sql`gen_random_uuid()`),
     name: varchar("name", { length: 255 }).notNull(),
     description: varchar("description", { length: 255 }),
     ...timestamps
 });
 
 export const sports = pgTable("sports", {
-    id: text("id").primaryKey(),
+    id: text("id").primaryKey().default(sql`gen_random_uuid()`),
     name: varchar("name", { length: 255 }).notNull(),
     code: varchar("code", { length: 50 }).notNull().unique(),
     categoryId: text("sports_category_id").references(() => sports_categories.id).notNull(),
     description: varchar("description", { length: 255 }),
+    bannerUrl: text("banner_url"),
+    bannerCldPubId: text("banner_cld_pub_id"),
     ...timestamps
 });
 
 // Players
 export const players = pgTable("players", {
-  id: serial("id").primaryKey(),
+  id: text("id").primaryKey().default(sql`gen_random_uuid()`),
   studentId: text("student_id").references(() => students.userId, { onDelete: 'cascade' }).notNull(),
   sportId: text("sport_id").references(() => sports.id, { onDelete: 'cascade' }).notNull(),
   position: varchar("position", { length: 100 }), // e.g., "Goalkeeper"
