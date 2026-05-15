@@ -42,7 +42,7 @@ router.get('/', async (req, res) => {
 
         const totalCount = countResult[0]?.count ?? 0;
 
-        const sportsList = await db
+        const usersList = await db
             .select({
                 ...getTableColumns(user),
                 // role: { ...getTableColumns(role) },
@@ -55,7 +55,7 @@ router.get('/', async (req, res) => {
             .offset(offset);
 
         res.status(200).json({
-            data: sportsList,
+            data: usersList,
             pagination: {
                 page: currentPage,
                 limit: limitPerPage,
@@ -65,8 +65,8 @@ router.get('/', async (req, res) => {
         });
 
     } catch (error) {
-        console.error(`GET /sports error: ${error}`);
-        res.status(500).json({ error: 'Failed to get sports' });
+        console.error(`GET /users error: ${error}`);
+        res.status(500).json({ error: 'Failed to get users' });
     }
 });
 
