@@ -25,7 +25,7 @@ const securityMiddleware = async (req: Request, res: Response, next: NextFunctio
                 message = 'Student request limit exceeded (10 perminute). Please wait.';
                 break;
             default:
-                limit = 5;
+                limit = 500; // fix this back to 5 after implementing authentication and authorization
                 message = 'Guest request limit exceeded (5 perminute). Please sign up for higher limits.';
                 break;
         }

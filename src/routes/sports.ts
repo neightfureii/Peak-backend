@@ -1,6 +1,6 @@
 import { and, desc, eq, getTableColumns, ilike, or, sql } from 'drizzle-orm';
 import express from 'express';
-import { sports, sports_categories } from '../db/schema/app.ts';
+import { sports, sports_categories } from '../db/schema/index.ts';
 import { db } from '../db/index.ts';
 
 const router = express.Router();
@@ -67,6 +67,25 @@ router.get('/', async (req, res) => {
     } catch (error) {
         console.error(`GET /sports error: ${error}`);
         res.status(500).json({ error: 'Failed to get sports' });
+    }
+});
+
+// Create new sport
+router.post('/', async (req, res) => {
+    try {
+        const { name, code, categoryId, description, bannerUrl, bannerCldPubId } = req.body;
+
+        const [createdSport] = await db
+            .insert(sports)
+            .values({ name, code, categoryId, description, bannerUrl, bannerCldPubId })
+            .returning({ id: sports.id });
+
+        if(!createdSport) throw new Error('Failed to create sport');
+
+        res.status(201).json({ data: createdSport });
+    } catch (e) {
+        console.error(`POST /sports error: ${e}`);
+        res.status(500).json({ error: e });
     }
 });
 

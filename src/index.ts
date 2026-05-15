@@ -5,6 +5,8 @@ import express from "express";
 import cors from "cors";
 import sportsRouter from "./routes/sports.ts";
 import studentsRouter from "./routes/students.ts";
+import userRouter from "./routes/users.ts";
+import sportsCategoriesRouter from "./routes/sports_categories.ts";
 import securityMiddleware from "./middleware/security.ts";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth.ts";
@@ -30,6 +32,8 @@ app.use(securityMiddleware);
 
 app.use('/api/sports', sportsRouter);
 app.use('/api/students', studentsRouter);
+app.use('/api/user', userRouter);
+app.use('/api/sports_categories', sportsCategoriesRouter);
 
 // Root GET route
 app.get("/", (req, res) => {
