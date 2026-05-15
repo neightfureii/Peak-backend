@@ -89,4 +89,26 @@ router.post('/', async (req, res) => {
     }
 });
 
+// Get single sport by ID
+router.get('/:id', async (req, res) => {
+    const sportId = req.params.id;
+
+    if(!sportId) return res.status(400).json({ error: 'No Sport Id found.' });
+
+    const [sportDetails] = await db
+        .select({
+            ...getTableColumns(sports),
+            sports_category: {
+                ...getTableColumns(sports_categories),
+            },
+        })
+        .from(sports)
+        .leftJoin(sports_categories, eq(sports.categoryId, sports_categories.id))
+        .where(eq(sports.id, sportId));
+
+    if(!sportDetails) return res.status(404).json({ error: 'No Sport found.' });
+
+    res.status(200).json({ data: sportDetails });
+});
+
 export default router;
