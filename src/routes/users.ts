@@ -26,18 +26,18 @@ router.get('/', async (req, res) => {
             )
         }
 
-        // if (role) {
-        //     filterConditions.push(
-        //         ilike(role.name, `%${role}%`)
-        //     )
-        // }
+        const normalizedRole = typeof role === 'string' ? role.trim() : '';
+        if (normalizedRole.length > 0) {
+            filterConditions.push(
+                ilike(user.role, `%${normalizedRole}%`)
+            );
+        }
 
         const whereClause = filterConditions.length > 0 ? and(...filterConditions) : undefined;
 
         const countResult = await db
             .select({ count: sql<number>`count(*)` })
             .from(user)
-            // .leftJoin(role, eq(user.role, role.id))
             .where(whereClause);
 
         const totalCount = countResult[0]?.count ?? 0;
@@ -45,10 +45,8 @@ router.get('/', async (req, res) => {
         const usersList = await db
             .select({
                 ...getTableColumns(user),
-                // role: { ...getTableColumns(role) },
             })
             .from(user)
-            // .leftJoin(role, eq(user.role, role.id))
             .where(whereClause)
             .orderBy(desc(user.createdAt))
             .limit(limitPerPage)
