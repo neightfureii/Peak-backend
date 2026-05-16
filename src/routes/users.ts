@@ -26,10 +26,11 @@ router.get('/', async (req, res) => {
             )
         }
 
-        if (role) {
+        const normalizedRole = typeof role === 'string' ? role.trim() : '';
+        if (normalizedRole.length > 0) {
             filterConditions.push(
-                ilike(user.role, `%${role}%`)
-            )
+                ilike(user.role, `%${normalizedRole}%`)
+            );
         }
 
         const whereClause = filterConditions.length > 0 ? and(...filterConditions) : undefined;
