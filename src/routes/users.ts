@@ -1,4 +1,5 @@
 import { and, desc, eq, getTableColumns, ilike, or, sql } from 'drizzle-orm';
+import { randomUUID } from 'crypto';
 import express from 'express';
 import { user } from '../db/schema/index.ts';
 import { db } from '../db/index.ts';
@@ -66,6 +67,43 @@ router.get('/', async (req, res) => {
         console.error(`GET /users error: ${error}`);
         res.status(500).json({ error: 'Failed to get users' });
     }
+});
+
+// Create new user
+router.post('/', async (req, res) => {
+    try {
+        const { name, email, role, image, imageCldPubId } = req.body;
+
+        const [createdUser] = await db
+            .insert(user)
+            .values({ id: randomUUID(), name, email, emailVerified: false, role, image, imageCldPubId })
+            .returning({ id: user.id });
+
+        if(!createdUser) throw new Error('Failed to create user');
+
+        res.status(201).json({ data: createdUser });
+    } catch (e) {
+        console.error(`POST /users error: ${e}`);
+        res.status(500).json({ error: e });
+    }
+});
+
+// Get single user by ID
+router.get('/:id', async (req, res) => {
+    const userId = req.params.id;
+
+    if(!userId) return res.status(400).json({ error: 'No User Id found.' });
+
+    const [userDetails] = await db
+        .select({
+            ...getTableColumns(user),
+        })
+        .from(user)
+        .where(eq(user.id, userId));
+
+    if(!userDetails) return res.status(404).json({ error: 'No User found.' });
+
+    res.status(200).json({ data: userDetails });
 });
 
 export default router;

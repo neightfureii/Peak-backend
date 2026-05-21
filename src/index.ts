@@ -32,7 +32,7 @@ app.use(securityMiddleware);
 
 app.use('/api/sports', sportsRouter);
 app.use('/api/students', studentsRouter);
-app.use('/api/user', userRouter);
+app.use('/api/users', userRouter);
 app.use('/api/sports_categories', sportsCategoriesRouter);
 
 // Root GET route
